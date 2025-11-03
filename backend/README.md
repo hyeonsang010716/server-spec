@@ -82,9 +82,10 @@ backend/
 │   │
 │   ├── service/             # 비즈니스 로직 계층
 │   │
-│   └── util/                # 공통 유틸리티 함수
-│
-├── main.py                  # FastAPI 애플리케이션 엔트리 포인트
+│   ├── util/                # 공통 유틸리티 함수
+│   │
+│   └── main.py              # FastAPI 애플리케이션
+├── .env.example             # 환경 변수 예시                  
 ├── pyproject.toml           # Python 프로젝트 설정 (uv, poetry 등)
 ├── README.md                # 본 문서
 └── uv.lock                  # 패키지 버전 잠금 파일
