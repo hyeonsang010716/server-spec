@@ -80,6 +80,12 @@ def create_app() -> FastAPI:
         logger.bind(**health_status).debug("헬스 체크")
         return health_status
     
+    logger.bind(
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=not settings.ENVIRONMENT
+    ).success("Uvicorn 서버 시작 완료")
+    
     return app
 
 
@@ -87,20 +93,10 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    host = settings.HOST
-    port = settings.PORT
-    reload = not settings.ENVIRONMENT
-    
-    logger.bind(
-        host=host,
-        port=port,
-        reload=reload
-    ).info("Uvicorn 서버 시작")
-    
     uvicorn.run(
-        "app.main:app",
-        host=host,
-        port=port,
-        reload=reload,
-        log_config=None,  # loguru 사용
+        app,
+        host=settings.HOST,
+        port=settings.PORT,
+        reload=not settings.ENVIRONMENT,
+        log_config=None,
     )
