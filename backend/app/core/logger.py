@@ -79,6 +79,7 @@ def setup_logging() -> None:
             format="{message}",
             serialize=True,
             level=config.LOG_LEVEL,
+            enqueue=True
         )
     else:
         # 읽기 쉬운 콘솔 포맷
@@ -87,6 +88,7 @@ def setup_logging() -> None:
             format="<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level> | {extra}",
             level=config.LOG_LEVEL,
             colorize=True,
+            enqueue=True
         )
     
     # 파일 출력 설정
@@ -103,6 +105,7 @@ def setup_logging() -> None:
             serialize=True,
             level=config.LOG_LEVEL,
             encoding="utf-8",
+            enqueue=True
         )
     
     # 표준 logging 라이브러리와 통합
