@@ -1,6 +1,6 @@
 FROM python:3.12-slim
 
-WORKDIR /app
+WORKDIR /backend
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y \
 # Install uv
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 ENV PATH="/root/.local/bin:${PATH}"
-ENV PYTHONPATH="/app:${PYTHONPATH}"
+ENV PYTHONPATH="/backend:${PYTHONPATH}"
 
 # Copy dependency files
 COPY pyproject.toml uv.lock ./
@@ -21,9 +21,10 @@ COPY pyproject.toml uv.lock ./
 # Install Python dependencies
 RUN uv sync --frozen --no-dev
 
-# Copy
+# Copy application code
 COPY app ./app
 COPY migration ./migration
+COPY alembic.ini ./
 
 EXPOSE 8000
 
