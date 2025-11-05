@@ -56,38 +56,57 @@
 
 ```bash
 backend/
-├── alembic/                 # 데이터베이스 마이그레이션 관리
+├── migration/               # 데이터베이스 마이그레이션 관리 (Alembic)
+│   ├── versions/            # 마이그레이션 버전 파일들
+│   ├── env.py               # Alembic 환경 설정
+│   ├── script.py.mako       # 마이그레이션 템플릿
+│   └── README               # 마이그레이션 가이드
 │
 ├── app/
 │   ├── api/                 # REST API 엔드포인트 (라우터, 컨트롤러)
 │   │   └── v1/              # API 버전별 디렉토리
+│   │       ├── router.py    # 라우터 집합
+│   │       └── user/        # 사용자 관련 엔드포인트
 │   │
 │   ├── config/              # 환경 변수 및 설정 관리
 │   │   └── setting.py       # Pydantic 기반 Setting 객체
 │   │
 │   ├── core/                # 애플리케이션 핵심 모듈
-│   │   ├── dependency/      # 의존성 주입 (DI) 정의
 │   │   ├── exception/       # Exception 핸들링 정의
+│   │   │   └── handler.py   # 예외 처리 핸들러
 │   │   └── logger.py        # 로깅 설정 및 유틸리티
 │   │
 │   ├── database/            # 데이터베이스 관련 모듈
-│   │   └── model/           # ORM 모델 정의
+│   │   ├── model/           # ORM 모델 정의
+│   │   │   └── user.py      # 사용자 모델
+│   │   └── session.py       # 데이터베이스 세션 관리
 │   │
 │   ├── dto/                 # Data Transfer Object (Service 간 데이터 전달용)
+│   │   └── user.py          # 사용자 DTO
 │   │
 │   ├── middleware/          # 미들웨어 (인증, 로깅, 예외 처리 등)
+│   │   └── tracking.py      # 요청 추적 미들웨어
 │   │
 │   ├── repository/          # 데이터 접근 계층 (DB 쿼리, CRUD)
+│   │   └── user.py          # 사용자 리포지토리
 │   │
 │   ├── schema/              # Request / Response 검증 스키마 (Pydantic)
+│   │   └── user.py          # 사용자 스키마
 │   │
 │   ├── service/             # 비즈니스 로직 계층
+│   │   └── user.py          # 사용자 서비스
 │   │
 │   ├── util/                # 공통 유틸리티 함수
 │   │
-│   └── main.py              # FastAPI 애플리케이션
-├── .env.example             # 환경 변수 예시                  
-├── pyproject.toml           # Python 프로젝트 설정 (uv, poetry 등)
+│   ├── container.py         # 의존성 주입 (DI) 컨테이너 정의
+│   └── main.py              # FastAPI 애플리케이션 진입점
+│
+├── test/                    # 테스트 코드
+│   └── README.md            # 테스트 가이드
+│
+├── Dockerfile               # Docker 이미지 빌드 설정
+├── alembic.ini              # Alembic 설정 파일
+├── pyproject.toml           # Python 프로젝트 설정
 ├── README.md                # 본 문서
 └── uv.lock                  # 패키지 버전 잠금 파일
 
