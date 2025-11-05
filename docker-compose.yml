@@ -1,0 +1,45 @@
+# version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hyeonsang-postgres
+    environment:
+      POSTGRES_USER: cho
+      POSTGRES_PASSWORD: hyeonsang
+      POSTGRES_DB: chohyeonsang
+    volumes:
+      - postgresql-data:/var/lib/postgresql/data
+    networks:
+      - hyeonsang-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cho -d chohyeonsang"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hyeonsang-backend
+    environment:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - hyeonsang-network
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/migration:/app/migration:ro
+
+networks:
+  hyeonsang-network:
+    driver: bridge
+
+volumes:
+  postgresql-data:
+    name: hyeonsang-postgresql-data
