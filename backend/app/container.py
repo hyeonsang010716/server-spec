@@ -10,7 +10,7 @@ class Container(containers.DeclarativeContainer):
 
     engine = providers.Singleton(
         create_async_engine,
-        settings.RDB_URL,
+        settings.POSTGRES_URL,
         echo=False,
         future=True,
     )

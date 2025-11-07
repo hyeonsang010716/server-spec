@@ -22,20 +22,20 @@ class Settings(BaseSettings):
     LOG_RETENTION: str = Field("30 days", description="로그 파일 롤테이션 기준")
     LOG_COMPRESSION: str = Field("gz", description="로그 롤테이션 파일 압축")
     
-    # RDB 정보
-    RDB_HOST: str = Field("hyeonsang-postgres", description="RDB HOST")
-    RDB_PORT: int = Field(5432, description="RDB PORT")
-    RDB_USER: str = Field("cho", description="RDB USER")
-    RDB_PASSWORD: str = Field("hyeonsang", description="RDB PASSWORD")
-    RDB_NAME: str = Field("chohyeonsang", description="RDB NAME")
+    # POSTGRES 정보
+    POSTGRES_HOST: str = Field("hyeonsang-postgres", description="POSTGRES HOST")
+    POSTGRES_PORT: int = Field(5432, description="POSTGRES PORT")
+    POSTGRES_USER: str = Field("cho", description="POSTGRES USER")
+    POSTGRES_PASSWORD: str = Field("hyeonsang", description="POSTGRES PASSWORD")
+    POSTGRES_NAME: str = Field("chohyeonsang", description="POSTGRES NAME")
     
     @property
-    def RDB_URL(self) -> str:
-        return f"postgresql+asyncpg://{self.RDB_USER}:{self.RDB_PASSWORD}@{self.RDB_HOST}:{self.RDB_PORT}/{self.RDB_NAME}"
+    def POSTGRES_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
     
     @property
-    def SYNC_RDB_URL(self) -> str:
-        return f"postgresql://{self.RDB_USER}:{self.RDB_PASSWORD}@{self.RDB_HOST}:{self.RDB_PORT}/{self.RDB_NAME}"
+    def SYNC_POSTGRES_URL(self) -> str:
+        return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
     
     @property
     def is_production(self) -> bool:
