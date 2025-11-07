@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     POSTGRES_PASSWORD: str = Field("hyeonsang", description="POSTGRES PASSWORD")
     POSTGRES_NAME: str = Field("chohyeonsang", description="POSTGRES NAME")
     
+    # MongoDB 정보
+    MONGODB_HOST: str = Field("hyeonsang-mongodb", description="MONGODB HOST")
+    MONGODB_PORT: int = Field(27017, description="MONGODB PORT")
+    MONGODB_USER: str = Field("cho", description="MONGODB USER")
+    MONGODB_PASSWORD: str = Field("hyeonsang", description="MONGODB PASSWORD")
+    MONGODB_NAME: str = Field("chohyeonsang", description="MONGODB NAME")
+    
     @property
     def POSTGRES_URL(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
@@ -36,6 +43,10 @@ class Settings(BaseSettings):
     @property
     def SYNC_POSTGRES_URL(self) -> str:
         return f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
+    
+    @property
+    def MONGODB_URL(self) -> str:
+        return f"mongodb://{self.MONGODB_USER}:{self.MONGODB_PASSWORD}@{self.MONGODB_HOST}:{self.MONGODB_PORT}/{self.MONGODB_NAME}?authSource=admin"
     
     @property
     def is_production(self) -> bool:

@@ -8,9 +8,11 @@ from app.core.logger import setup_logging, get_logger
 from app.middleware.tracking import (
     RequestIDMiddleware,
     ErrorTrackingMiddleware,
-    SecurityHeadersMiddleware,
+    MongoDBLoggingMiddleware,
+    SecurityHeadersMiddleware
 )
 from app.core.exception.handler import register_exception_handlers
+from app.database.session import init_mongodb, close_mongodb
 from app.api.v1.router import api_router
 from app.container import Container
 
@@ -22,6 +24,8 @@ logger = get_logger("main")
 async def lifespan(app: FastAPI):
     """애플리케이션 생명주기 관리"""
     
+    await init_mongodb()
+    
     logger.bind(
         app_title=app.title,
         app_version=app.version,
@@ -29,6 +33,8 @@ async def lifespan(app: FastAPI):
     ).info("애플리케이션 시작")
     
     yield
+    
+    await close_mongodb()
     
     logger.info("애플리케이션 종료")
 
@@ -59,6 +65,7 @@ def create_app() -> FastAPI:
     
     # 미들웨어 등록 (순서 중요함 -> 먼저 등록된 것이 나중에 실행됨)
     app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(MongoDBLoggingMiddleware)
     app.add_middleware(ErrorTrackingMiddleware)
     app.add_middleware(RequestIDMiddleware)
     logger.debug("미들웨어 등록 완료")
