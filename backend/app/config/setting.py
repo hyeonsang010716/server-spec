@@ -36,6 +36,11 @@ class Settings(BaseSettings):
     MONGODB_PASSWORD: str = Field("hyeonsang", description="MONGODB PASSWORD")
     MONGODB_NAME: str = Field("chohyeonsang", description="MONGODB NAME")
     
+    # Redis 정보
+    REDIS_HOST: str = Field("hyeonsang-redis", description="REDIS HOST")
+    REDIS_PORT: int = Field(6379, description="REDIS PORT")
+    REDIS_DB: int = Field(0, description="REDIS DB")
+    
     @property
     def POSTGRES_URL(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
@@ -47,6 +52,10 @@ class Settings(BaseSettings):
     @property
     def MONGODB_URL(self) -> str:
         return f"mongodb://{self.MONGODB_USER}:{self.MONGODB_PASSWORD}@{self.MONGODB_HOST}:{self.MONGODB_PORT}/{self.MONGODB_NAME}?authSource=admin"
+    
+    @property
+    def REDIS_URL(self) -> str:
+        return f"redis://{self.REDIS_HOST}:{self.REDIS_PORT}/{self.REDIS_DB}"
     
     @property
     def is_production(self) -> bool:
