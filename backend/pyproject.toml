@@ -15,6 +15,7 @@ dependencies = [
     "fastapi[standard]==0.118.0",
     "langchain==1.0.0",
     "langchain-chroma==1.0.0",
+    "langchain-community==0.4.1",
     "langchain-openai==1.0.1",
     "langgraph-checkpoint-sqlite==2.0.1",
     "loguru==0.7.3",
