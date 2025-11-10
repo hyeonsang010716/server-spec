@@ -35,6 +35,20 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: hyeonsang-redis
+    volumes:
+      - redis-data:/data
+    networks:
+      - hyeonsang-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -46,6 +60,10 @@ services:
       - "8000:8000"
     depends_on:
       postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - hyeonsang-network
@@ -62,3 +80,5 @@ volumes:
     name: hyeonsang-postgresql-data
   mongodb-data:
     name: hyeonsang-mongodb-data
+  redis-data:
+    name: hyeonsang-redis-data
