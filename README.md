@@ -7,6 +7,7 @@
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-red.svg)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Ready-blue.svg)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Ready-green.svg)
+![Redis](https://img.shields.io/badge/Redis-Ready-red.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
 
 **A production-ready FastAPI template featuring clean architecture, dependency injection patterns, Alembic migrations, and organized project structure for scalable API development.**
@@ -68,6 +69,15 @@ uv run python -m app.main
 # Check API health
 curl http://localhost:8000/health
 
+# Expected response:
+# {
+#   "status": "healthy",
+#   "version": "1.0.0",
+#   "services": {
+#     "redis": "healthy"
+#   }
+# }
+
 # View API documentation
 open http://localhost:8000/docs
 ```
@@ -127,6 +137,37 @@ class UserService:
 container = Container()
 container.user_service()  # Automatically resolves dependencies
 container.user_repository() 
+```
+
+### **Automatic API Logging**
+```python
+# Every API call is automatically logged to MongoDB
+# GET /api/v1/users → MongoDB Log Document:
+{
+    "created_at": "2024-01-01T12:00:00Z",
+    "called_api": "/api/v1/users",
+    "method": "GET",
+    "status_code": 200,
+    "response_time": 45.23,  # milliseconds
+    "ip_address": "127.0.0.1"
+}
+```
+
+### **Redis Caching & Session Management**
+```python
+# Built-in Redis client with automatic connection management
+from app.core.redis import get_redis_client
+
+# Use for caching
+redis = await get_redis_client()
+await redis.set("user:123", user_data, ex=3600)
+
+# Session management
+await redis.hset("session:abc123", mapping={
+    "user_id": "123",
+    "last_access": datetime.now()
+})
+```
 
 ### **Production-Grade Testing**
 ```python
@@ -250,6 +291,16 @@ docker-compose up -d  # PostgreSQL + MongoDB + Redis + API
 
 # Container-based migrations
 docker exec -it api-container alembic upgrade head
+
+# View MongoDB logs
+docker exec -it mongodb-container mongosh
+> use your_db_name
+> db.log.find().sort({created_at: -1}).limit(10)
+
+# Access Redis CLI
+docker exec -it redis-container redis-cli
+> KEYS *
+> GET "user:123"
 
 ## Tech Stack
 

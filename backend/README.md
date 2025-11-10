@@ -78,7 +78,8 @@ backend/
 │   ├── core/                # 애플리케이션 핵심 모듈
 │   │   ├── exception/       # Exception 핸들링 정의
 │   │   │   └── handler.py   # 예외 처리 핸들러
-│   │   └── logger.py        # 로깅 설정 및 유틸리티
+│   │   ├── logger.py        # 로깅 설정 및 유틸리티
+│   │   └── redis.py         # Redis 클라이언트 관리
 │   │
 │   ├── database/            # 데이터베이스 관련 모듈
 │   │   ├── model/           # ORM 모델 정의
@@ -119,4 +120,26 @@ backend/
 
 
 ## 실행
+### 1. 서비스 초기화
+애플리케이션 시작 시 자동으로 다음 서비스들이 초기화됩니다:
+- **PostgreSQL**: 메인 데이터베이스 연결
+- **MongoDB**: 로그 저장소 연결 
+- **Redis**: 캐싱 및 세션 저장소 연결
+
+### 2. 실행 명령어
+```bash
 uv run python -m app.main
+```
+
+### 3. 헬스체크
+서비스 상태는 `/health` 엔드포인트에서 확인할 수 있습니다:
+```json
+{
+  "status": "healthy",
+  "version": "1.0.0",
+  "environment": "development",
+  "services": {
+    "redis": "healthy"
+  }
+}
+```
