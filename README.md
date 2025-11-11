@@ -417,6 +417,6 @@ Comprehensive guides for every aspect:
 
 **Don't forget to ⭐ star this repository if you found it useful!**
 
-[🔝 Back to Top](#-production-ready-fastapi-template)
+[🔝 Back to Top](#production-ready-fastapi-template)
 
 </div>
