@@ -372,6 +372,7 @@ docker exec -it mongodb-container mongosh
 docker exec -it redis-container redis-cli
 > KEYS *
 > GET "user:123"
+```
 
 ## Tech Stack
 
