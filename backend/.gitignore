@@ -2,6 +2,8 @@ __pycache__/
 .pytest_cache/
 mongodb-data/
 postgresql-data/
+chromadb-data/
+sqlite-data/
 .venv/
 
 .env

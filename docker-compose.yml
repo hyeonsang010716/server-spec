@@ -70,6 +70,7 @@ services:
     volumes:
       - ./backend/app:/backend/app:ro
       - ./backend/migration:/backend/migration
+      - ./backend/data:/backend/data
 
 networks:
   hyeonsang-network:
