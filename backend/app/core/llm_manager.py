@@ -1,6 +1,7 @@
-from typing import Dict, List, Optional
+from typing import Dict, List
 from langchain_openai import ChatOpenAI
 from enum import Enum
+from functools import lru_cache
 
 from app.config.setting import settings
 
@@ -20,17 +21,7 @@ class ModelName(str, Enum):
 class LLMManager:
     """LLM 모델을 관리하는 클래스"""
     
-    _instance: Optional['LLMManager'] = None
-    
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
-    
     def __init__(self):
-        if hasattr(self, '_initialized'):
-            return
-            
         self._models: Dict[str, ChatOpenAI] = {}
         self._initialized = False
     
@@ -64,6 +55,7 @@ class LLMManager:
         return self._initialized
 
 
+@lru_cache(maxsize=1)
 def get_llm_manager() -> LLMManager:
     """LLMManager 싱글톤 인스턴스를 반환합니다."""
     return LLMManager()

@@ -16,7 +16,7 @@ from app.database.session import init_mongodb, close_mongodb
 from app.core.redis import get_redis_client, close_redis
 from app.core.llm_manager import get_llm_manager
 from app.core.chroma_manager import get_chroma_manager
-from app.core.graph.example.graph_orchestrator import example_graph
+from app.core.graph.example.graph_orchestrator import get_example_graph
 from app.api.v1.router import api_router
 from app.container import Container
 
@@ -57,6 +57,7 @@ async def lifespan(app: FastAPI):
     else:
         logger.warning("ChromaDB 초기화 실패 - 기능이 제한될 수 있습니다")
     
+    example_graph = get_example_graph()
     await example_graph.initialize()
     logger.info("Agent 초기화 성공")
     
@@ -75,6 +76,7 @@ async def lifespan(app: FastAPI):
     await close_redis()
     logger.info("Redis 연결 종료")
     
+    example_graph = get_example_graph()
     await example_graph.cleanup()
     logger.info("Agent 연결 종료")
     

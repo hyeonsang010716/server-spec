@@ -3,6 +3,7 @@ from typing import List, Dict, Any, Optional
 from pathlib import Path
 import traceback
 import asyncio
+from functools import lru_cache
 import chromadb
 from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings
@@ -15,27 +16,14 @@ logger = get_logger("chromaDB.manager")
 
 
 class ChromaManager:
-    """ChromaDB 벡터 스토어 관리자 (싱글톤)"""
-    
-    _instance: Optional[ChromaManager] = None
-    _lock = asyncio.Lock()
-    
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super().__new__(cls)
-        return cls._instance
+    """ChromaDB 벡터 스토어 관리자"""
 
     def __init__(self, persist_directory: str = "./data/chromadb-data"):
-        # 이미 초기화된 경우 skip
-        if hasattr(self, '_initialized_singleton'):
-            return
-            
         self.embeddings: Optional[OpenAIEmbeddings] = None
         self.collections: Dict[str, Chroma] = {}
         self.persist_directory = persist_directory
         self.client: Optional[chromadb.PersistentClient] = None
         self._initialized = False
-        self._initialized_singleton = True
 
         # 동일 컬렉션을 동시에 만들려 할 때의 충돌 방지
         self._locks: Dict[str, asyncio.Lock] = {}
@@ -280,7 +268,7 @@ class ChromaManager:
         return counts
 
 
-# 싱글톤 인스턴스를 가져오는 헬퍼 함수
+@lru_cache(maxsize=1)
 def get_chroma_manager() -> ChromaManager:
     """ChromaManager 싱글톤 인스턴스를 반환합니다."""
     return ChromaManager()

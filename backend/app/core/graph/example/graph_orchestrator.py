@@ -6,6 +6,7 @@ from langchain_community.callbacks import get_openai_callback
 import aiosqlite
 import time
 import os
+from functools import lru_cache
 
 from app.core.graph.example.graph_state import GraphState
 from app.core.graph.example.prompt_manager import PromptManager
@@ -157,10 +158,13 @@ class GraphOrchestrator:
             self._sqlite_conn = None
     
     
-prompt_manager = PromptManager()
-chain_manager = ChainManager(prompt_manager)
-example_graph = GraphOrchestrator(
-    prompt_manager=prompt_manager,
-    chain_manager=chain_manager,
-    db_path="./data/sqlite-data/example/sqlite.db"
-)
+@lru_cache(maxsize=1)
+def get_example_graph() -> GraphOrchestrator:
+    """GraphOrchestrator 싱글톤 인스턴스를 반환합니다."""
+    prompt_manager = PromptManager()
+    chain_manager = ChainManager(prompt_manager)
+    return GraphOrchestrator(
+        prompt_manager=prompt_manager,
+        chain_manager=chain_manager,
+        db_path="./data/sqlite-data/example/sqlite.db"
+    )
