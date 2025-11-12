@@ -113,6 +113,7 @@ backend/
 │   ├── config/           # Environment & settings  
 │   ├── core/             # Core application modules
 │   │   ├── graph/        # LangGraph AI agent workflows
+│   │   ├── lock/         # Distributed locking system
 │   │   ├── chroma_manager.py # ChromaDB vector store
 │   │   ├── llm_manager.py    # LLM model management
 │   │   ├── logger.py     # Logging configuration
@@ -185,6 +186,34 @@ await redis.hset("session:abc123", mapping={
     "user_id": "123",
     "last_access": datetime.now()
 })
+```
+
+### **Distributed Locking System**
+```python
+# Redis-based distributed lock for concurrent task coordination
+from app.core.lock import get_redis_lock
+
+lock = get_redis_lock()
+
+# Context manager usage (recommended)
+async with lock.lock("payment_processing", ttl=30, timeout=5.0) as acquired:
+    if acquired:
+        await process_payment(order_id)
+    else:
+        raise Exception("Could not acquire payment lock")
+
+# Manual lock management
+if await lock.acquire("data_sync", ttl=60):
+    try:
+        await sync_external_data()
+        # Extend lock if needed for long operations
+        await lock.extend("data_sync", 30)
+    finally:
+        await lock.release("data_sync")
+
+# Check lock status
+if await lock.is_locked("critical_resource"):
+    logger.info("Resource is currently locked")
 ```
 
 ### **Production-Grade Testing**
@@ -381,7 +410,7 @@ docker exec -it redis-container redis-cli
 | **API Framework** | FastAPI 0.118.0 | High-performance async API |
 | **Database** | PostgreSQL + SQLAlchemy 2.0 | Relational data with async ORM |
 | **NoSQL Database** | MongoDB + Beanie | API logs & unstructured data |
-| **Cache** | Redis | Session storage & caching |
+| **Cache** | Redis | Session storage, caching & distributed locks |
 | **Migrations** | Alembic | Schema version control |
 | **Testing** | pytest + pytest-asyncio | Unit & integration testing |
 | **DI Container** | dependency-injector | Type-safe dependency injection |

@@ -86,6 +86,9 @@ backend/
 │   │   │       ├── graph_orchestrator.py  # LangGraph 오케스트레이션
 │   │   │       ├── graph_state.py         # 그래프 상태 정의
 │   │   │       └── prompt_manager.py      # 프롬프트 템플릿 관리
+│   │   ├── lock/            # 분산 락 시스템
+│   │   │   ├── base.py      # 분산 락 추상 클래스
+│   │   │   └── redis_lock.py # Redis 기반 분산 락 구현
 │   │   ├── chroma_manager.py # ChromaDB 벡터 데이터베이스 관리
 │   │   ├── llm_manager.py    # OpenAI LLM 모델 관리
 │   │   ├── logger.py        # 로깅 설정 및 유틸리티
@@ -179,3 +182,42 @@ uv run python -m app.main
 - **PromptManager**: 프롬프트 템플릿 중앙 관리
 - **GraphState**: 에이전트 상태 관리 (메시지, 문서, 답변)
 - SQLite 기반 대화 이력 저장
+
+## 분산 락 시스템
+
+### Redis 기반 분산 락
+분산 환경에서 동시성 제어를 위한 Redis 기반 락 시스템:
+- **DistributedLock**: 분산 락을 위한 추상 기본 클래스
+- **RedisLock**: Redis를 활용한 분산 락 구현체
+- 컨텍스트별 토큰 관리로 안전한 락 소유권 보장
+- Lua 스크립트를 통한 원자적 연산 지원
+
+### 주요 기능
+- **락 획득/해제**: 타임아웃 옵션과 TTL 설정 지원
+- **락 연장**: 장시간 작업을 위한 TTL 연장 기능
+- **소유권 검증**: 락 소유자만 해제/연장 가능
+- **컨텍스트 매니저**: async with 구문으로 간편한 사용
+
+### 사용 예시
+```python
+from app.core.lock import get_redis_lock
+
+lock = get_redis_lock()
+
+# 컨텍스트 매니저로 사용
+async with lock.lock("critical_section", ttl=30) as acquired:
+    if acquired:
+        # 크리티컬 섹션 코드 실행
+        await perform_critical_operation()
+    else:
+        logger.warning("Failed to acquire lock")
+
+# 수동 락 관리
+if await lock.acquire("resource_lock", ttl=60, timeout=5.0):
+    try:
+        await process_resource()
+        # 필요시 TTL 연장
+        await lock.extend("resource_lock", 30)
+    finally:
+        await lock.release("resource_lock")
+```
