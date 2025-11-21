@@ -336,7 +336,18 @@ alembic revision --autogenerate -m "fix"
 pg_dump -h localhost -U username dbname > backup.sql
 ```
 
-### 4. 테스트 환경에서 먼저 실행
+### 4. 마이그레이션 적용 확인 방법
+
+```bash
+# PostgreSQL 컨테이너 접속
+docker exec -it hyeonsang-postgres psql -U cho -d chohyeonsang
+# 테이블이 생성 되었는지 확인
+\dt;
+# 접속 해제
+exit
+```
+
+### 5. 테스트 환경에서 먼저 실행
 
 프로덕션에 적용하기 전에 개발/스테이징 환경에서 마이그레이션을 테스트하세요.
 
