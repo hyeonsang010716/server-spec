@@ -123,6 +123,14 @@ backend/
 │   ├── container.py         # 의존성 주입 (DI) 컨테이너 정의
 │   └── main.py              # FastAPI 애플리케이션 진입점
 │
+├── data/                    # 영속화 데이터 저장소
+│   ├── chromadb-data/       # ChromaDB 벡터 데이터베이스 저장 공간
+│   │   ├── 8e0b3038.../     # 컬렉션별 데이터 파일
+│   │   └── chroma.sqlite3   # ChromaDB 메타데이터
+│   └── sqlite-data/         # LangGraph 메모리 저장소
+│       └── example/         # 예제 에이전트용 SQLite DB
+│           └── sqlite.db    # 대화 이력 저장
+│
 ├── test/                    # 테스트 코드
 │   └── README.md            # 테스트 가이드
 │

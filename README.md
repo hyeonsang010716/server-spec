@@ -126,6 +126,9 @@ backend/
 │   ├── util/             # Helper utilities
 │   │   └── agent_assistant.py # AI agent helpers
 │   └── container.py      # Dependency injection setup
+├── data/                 # Persistent data storage
+│   ├── chromadb-data/    # ChromaDB vector database storage
+│   └── sqlite-data/      # SQLite data for LangGraph memory
 ├── test/
 │   ├── unit/             # Fast unit tests with mocks
 │   └── ntegration/      # Full-stack integration tests
