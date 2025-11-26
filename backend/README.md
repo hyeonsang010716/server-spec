@@ -103,8 +103,9 @@ backend/
 │   ├── dto/                 # Data Transfer Object (Service 간 데이터 전달용)
 │   │   └── user.py          # 사용자 DTO
 │   │
-│   ├── middleware/          # 미들웨어 (인증, 로깅, 예외 처리 등)
-│   │   └── tracking.py      # 요청 추적 미들웨어
+│   ├── middleware/          # 미들웨어 (인증, 로깅, 예외 처리, 보안)
+│   │   ├── tracking.py      # 요청 추적 미들웨어
+│   │   └── auth.py          # Bearer 토큰 인증 미들웨어
 │   │
 │   ├── repository/          # 데이터 접근 계층 (DB 쿼리, CRUD)
 │   │   ├── user.py          # 사용자 리포지토리
@@ -234,6 +235,54 @@ if await lock.acquire("resource_lock", ttl=60, timeout=5.0):
     finally:
         await lock.release("resource_lock")
 ```
+
+## Bearer 토큰 인증 시스템
+
+### 개요
+운영 환경에서 API 보안을 위한 Bearer 토큰 기반 인증 미들웨어를 제공합니다. 이 미들웨어는 프로덕션 환경에서만 활성화되며, 모든 API 요청에 대해 Bearer 토큰을 검증합니다.
+
+### 주요 기능
+- **환경별 동작**: PROD 환경에서만 활성화, 개발/스테이징 환경에서는 자동 비활성화
+- **Bearer 토큰 검증**: Authorization 헤더를 통한 표준 Bearer 토큰 인증
+- **경로별 예외 처리**: 문서, 헬스체크 등 특정 경로는 인증 제외
+- **요청 추적**: 인증 실패시 요청 ID와 함께 상세 로그 기록
+
+### 환경 변수 설정
+```env
+# 인증 설정
+ACCESS_TOKEN=your-secret-token-here   # API 접근 토큰 (PROD 환경에서만 사용)
+ENVIRONMENT=PROD                      # 운영 환경 설정시 인증 활성화
+```
+
+### 인증 제외 경로
+다음 경로들은 인증 없이 접근 가능합니다:
+- `/docs` - Swagger UI 문서
+- `/redoc` - ReDoc API 문서
+- `/openapi.json` - OpenAPI 스키마
+- `/health` - 헬스체크 엔드포인트
+- `/favicon.ico` - 파비콘
+
+### 사용 예시
+```bash
+# Bearer 토큰을 포함한 요청
+curl -X GET http://localhost:8000/api/v1/users \
+  -H "Authorization: Bearer your-secret-token-here"
+
+# 인증 실패 응답 (401 Unauthorized)
+{
+  "detail": "Invalid access token"
+}
+```
+
+### 인증 실패 시나리오
+1. **Authorization 헤더 누락**: `{"detail": "Authorization header required"}`
+2. **잘못된 헤더 형식**: `{"detail": "Invalid authorization header format"}`
+3. **유효하지 않은 토큰**: `{"detail": "Invalid access token"}`
+
+### 구현 상세
+- **미들웨어 위치**: `app/middleware/auth.py`
+- **클래스명**: `BearerTokenAuthMiddleware`
+- **로거**: `middleware.bearer_auth`로 모든 인증 이벤트 추적
 
 ## 로깅 시스템
 

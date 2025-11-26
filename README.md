@@ -119,6 +119,7 @@ backend/
 │   │   ├── logger.py     # Logging configuration
 │   │   └── redis.py      # Redis client
 │   ├── service/          # Business logic
+│   ├── middleware/       # Middleware (auth, logging, exception, tracking)
 │   ├── repository/       # Data access layer
 │   ├── database/         # Models & session management
 │   ├── schema/           # Pydantic request/response models
@@ -190,6 +191,9 @@ LOG_FILE_PATH=/backend/logs/app.log   # Container internal path
 LOG_ROTATION=100 MB                   # Rotate after 100MB
 LOG_RETENTION=30 days                 # Delete logs older than 30 days
 LOG_COMPRESSION=gz                    # Compress old logs
+
+# Authentication (Bearer Token)
+ACCESS_TOKEN=your-secret-token-here   # API access token (PROD environment only)
 ```
 
 #### **Log Structure**
@@ -316,6 +320,20 @@ async def log_requests(request, call_next):
         status_code=response.status_code,
         response_time=response.headers["X-Process-Time"]
     )
+```
+
+### **Bearer Token Authentication**
+```python
+# Production environment security with automatic token validation
+# Activated only when ENVIRONMENT="PROD" and ACCESS_TOKEN is set
+
+# Request with Bearer token
+curl -H "Authorization: Bearer your-secret-token" http://localhost:8000/api/v1/users
+
+# Excluded paths (no auth required):
+# - /docs, /redoc, /openapi.json (API documentation)
+# - /health (Health check endpoint)
+# - /favicon.ico
 ```
 
 ### **AI & LLM Integration**
