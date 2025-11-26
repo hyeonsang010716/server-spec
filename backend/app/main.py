@@ -11,6 +11,7 @@ from app.middleware.tracking import (
     MongoDBLoggingMiddleware,
     SecurityHeadersMiddleware
 )
+from app.middleware.auth import BearerTokenAuthMiddleware
 from app.core.exception.handler import register_exception_handlers
 from app.database.session import init_mongodb, close_mongodb
 from app.core.redis import get_redis_client, close_redis
@@ -111,6 +112,7 @@ def create_app() -> FastAPI:
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(MongoDBLoggingMiddleware)
     app.add_middleware(ErrorTrackingMiddleware)
+    app.add_middleware(BearerTokenAuthMiddleware)  # 인증 미들웨어 추가
     app.add_middleware(RequestIDMiddleware)
     logger.debug("미들웨어 등록 완료")
     

@@ -44,6 +44,9 @@ class Settings(BaseSettings):
     REDIS_PORT: int = Field(6379, description="REDIS PORT")
     REDIS_DB: int = Field(0, description="REDIS DB")
     
+    # 인증 정보
+    ACCESS_TOKEN: Optional[str] = Field(None, description="API 접근 토큰 (PROD 환경에서만 사용)")
+    
     @property
     def POSTGRES_URL(self) -> str:
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_NAME}"
